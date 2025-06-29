@@ -1,3 +1,4 @@
+sw1
 
 create database sw1;
 use sw1;
@@ -18,3 +19,24 @@ insert into members(name, course, year_level, status) values
 ('Miguel Cruz', 'BSIT', '4', 'graduated');
 delete from members where name='miguel cruz';
 select * from members where status = 'active';
+
+
+sw2
+
+create database shs_registry;
+use shs_registry;
+create table students(student_id int primary key auto_increment, full_name varchar(100), strand varchar(100), grade_level int);
+
+insert into students(full_name, strand, grade_level) values
+('Lara Dela Cruz', 'STEM', 11), ('Marco Santos', 'ABM', 11), ('Angel Bautista', 'HUMMS', 12),
+('JM Tianzon', 'STEM', 11), ('Jonel Caisip', 'STEM', 11), ('Marcus Aristain', 'STEM', 12), ('Nico Barredo', 'STEM', 12),
+('Mervin Maik', 'ABM', 11), ('Joseph Coronodo', 'ABM', 11), ('Tim Tan', 'ABM', 12), ('Miguel Co', 'ABM', 12),
+('Regan Asino', 'HUMMS', 11), ('Kenneth Balatucan', 'HUMMS', 11), ('Jerome Aguila', 'HUMMS', 12), ('Nicole Dela Cruz', 'HUMMS', 12);
+-- ('Mika Miranda', 'HUMMS', 12), ('Allysa Ocampo', 'HUMMS', 12), ('Ayessa Pili', 'STEM', 12), ('Julia Datang', 'STEM', 12), ('Trisha Morales', 'ABM', 12), ('Yunice Matabile', 'ABM', 12);
+
+update students set grade_level = 12 where full_name= 'Marco Santos';
+delete from students where full_name = 'Angel Bautista';
+insert into students(full_name, strand, grade_level) values ('Ardee Orlanda', 'HUMMS', 12);
+update students set strand = 'ABM' where full_name= 'Lara Dela Cruz';
+delete from students where grade_level = 11 and strand = 'STEM';
+select * from students;
