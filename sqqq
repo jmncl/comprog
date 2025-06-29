@@ -40,3 +40,31 @@ insert into students(full_name, strand, grade_level) values ('Ardee Orlanda', 'H
 update students set strand = 'ABM' where full_name= 'Lara Dela Cruz';
 delete from students where grade_level = 11 and strand = 'STEM';
 select * from students;
+
+
+lab
+
+create database garage_db;
+use garage_db;
+create table cars(car_id int primary key auto_increment, model_name varchar(100), year_made int, condition varchar(100)); 
+
+insert into cars(model_name, year_made, condition) values 
+('Mitsubishi XPander', 1999, 'running'), ('Honda Civic', 1998, 'running'),
+('Toyota Vios', 1985, 'rusty'), ('Mitsubishi Montero', 1961, 'running'),
+('Toyota Fortuner', 1996, 'sold'), ('Ford Everest', 1975, 'rusty'),
+('Mitsubishi Mirage', 1987, 'rusty'), ('Toyota Innova', 1993, 'running'),
+('Toyota Vios', 1985, 'rusty'), ('Ford Ranger', 1961, 'rusty');
+--
+
+select * from cars where conditio = 'running';
+insert into cars(model_name, year_made, condition) values ('Ford Everest', 2000, 'running');
+--
+delete from cars where car_id=9;
+--
+
+UPDATE cars
+SET conditio = 'restored'
+WHERE condition != 'sold' AND (year_made like'%3' or year_made like '%7');
+--
+
+select * from cars where condition != 'rusty';
