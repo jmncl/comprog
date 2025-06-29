@@ -1,0 +1,20 @@
+
+create database sw1;
+use sw1;
+create table members(id int primary key auto_increment, name varchar(100), course varchar(100), year_level int, status varchar(50));
+
+insert into members(name, course, year_level, status) values
+('JM Tianzon', 'BSIT', '1', 'inactive'), ('Jonel Caisip', 'BSIT', '1', 'active'), ('Marcus Aristain', 'BSIT', '1', 'active'),
+('Nico Barredo', 'BSME', '4', 'graduated'), ('Kenneth Balatucan', 'BSME', '1', 'active'), ('Jerome Aguila', 'BSME', '1', 'active'),
+('Mervin Maik', 'BSEE', '4', 'graduated'), ('Joseph Coronodo', 'BSEE', '1', 'inactive'), ('Tim Tan', 'BSME', '1', 'inactive'),
+('Regan Asino', 'BSCE', '4', 'graduated'), ('Miguel Co', 'BSCE', '2', 'active'), ('Nicole Dela Cruz', 'BSCE', '3', 'active'),
+('Mika Miranda', 'BSED', '4', 'graduated'), ('Julia Datang', 'BSED', '2', 'active'), ('Ayessa Pili', 'BSED', '3', 'active');
+
+insert into members(name, course, year_level, status) values
+('Alexa Reyes', 'BSIT', '1', 'active');
+update members set year_level = '2' where name= 'Alexa Reyes';
+
+insert into members(name, course, year_level, status) values
+('Miguel Cruz', 'BSIT', '4', 'graduated');
+delete from members where name='miguel cruz';
+select * from members where status = 'active';
