@@ -121,3 +121,84 @@ echo $artistList[8] . "<br>";
 echo $artistList[9] . "<br>";
 echo $artistList[10] . "<br>";
 ?>
+
+
+
+sw2
+
+<?php
+session_start();
+
+$User = "yourname";
+$Pass = "BSIT";
+
+if (isset($_GET['logout'])) {
+    session_destroy();
+    setcookie("username", "", time() - 3600);
+    header("Location: student.php");
+    exit();
+}
+
+if (isset($_POST['login'])) {
+    $inputUser = $_POST['username'];
+    $inputPass = $_POST['password'];
+
+    if ($inputUser === $User && $inputPass === $Pass) {
+        $_SESSION['username'] = $inputUser;
+
+        if (isset($_POST['remember'])) {
+            setcookie("username", $inputUser, time() + (2 * 24 * 60 * 60));
+        }
+
+        header("Location: student.php");
+        exit();
+    } else {
+        $error = "Invalid username or password.";
+    }
+}
+
+$isLoggedIn = false;
+if (isset($_SESSION['username']) || isset($_COOKIE['username'])) {
+    $isLoggedIn = true;
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BSIT Login</title>
+</head>
+<body>
+
+<?php if ($isLoggedIn): ?>
+    <a href="?logout=1">Logout</a>
+    <h3>List of Student Names</h3>
+    <p>1. Lance Gabriel</p>
+    <p>2. Angelica Reyes</p>
+    <p>3. Daniel Cruz</p>
+    <p>4. Katrina Santos</p>
+    <p>5. Miguel Torres</p>
+    <p>6. Patricia Mendoza</p>
+    <p>7. Joshua Dela Cruz</p>
+    <p>8. Nicole Lim</p>
+    <p>9. Andrew Villanueva</p>
+    <p>10. Clarisse Ramos</p>
+
+<?php else: ?>
+    <h2>Login to BSIT</h2>
+    <?php if (isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
+    <form method="POST" action="">
+        <label>Username:</label>
+        <input type="text" name="username" required><br><br>
+        
+        <label>Password:</label>
+        <input type="password" name="password" required><br><br>
+        
+        <input type="checkbox" name="remember"> Remember Me<br><br>
+        
+        <input type="submit" name="login" value="Login">
+    </form>
+<?php endif; ?>
+
+</body>
+</html>
