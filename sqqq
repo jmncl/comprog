@@ -36,7 +36,7 @@ file_put_contents("Test_Folder/artists.txt", $artistList[7] . PHP_EOL, FILE_APPE
 file_put_contents("Test_Folder/artists.txt", $artistList[8] . PHP_EOL, FILE_APPEND);
 file_put_contents("Test_Folder/artists.txt", $artistList[9] . PHP_EOL, FILE_APPEND);
 file_put_contents("Test_Folder/artists.txt", $artistList[10] . PHP_EOL, FILE_APPEND);
-
+echo "2. 'artists.txt' File Created!<br>";
 echo "3. Content of 'artists.txt':<br>";
 echo $artistList[0] . "<br>";
 echo $artistList[1] . "<br>";
