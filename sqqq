@@ -1,246 +1,291 @@
-
 sw1
+Imports MySql.Data.MySqlClient
 
-<?php
-$folderName = "Test_Folder";
 
-if (!is_dir($folderName)) {
-    mkdir($folderName);
-    echo "1. Folder '$folderName' created!<br>";
-} else {
-    echo "1. Folder '$folderName' already exists.<br>";
-}
+Public Class Form1
 
-$artistList = [
-    "10 Filipino Artists in the Philippines (Showbiz)",
-    "1. Vice Ganda",
-    "2. Anne Curtis",
-    "3. Coco Martin",
-    "4. Kathryn Bernardo",
-    "5. Daniel Padilla",
-    "6. Liza Soberano",
-    "7. Enrique Gil",
-    "8. Kim Chiu",
-    "9. James Reid",
-    "10. Alden Richards"
-];
 
-file_put_contents("Test_Folder/artists.txt", $artistList[0] . PHP_EOL);
-file_put_contents("Test_Folder/artists.txt", $artistList[1] . PHP_EOL, FILE_APPEND);
-file_put_contents("Test_Folder/artists.txt", $artistList[2] . PHP_EOL, FILE_APPEND);
-file_put_contents("Test_Folder/artists.txt", $artistList[3] . PHP_EOL, FILE_APPEND);
-file_put_contents("Test_Folder/artists.txt", $artistList[4] . PHP_EOL, FILE_APPEND);
-file_put_contents("Test_Folder/artists.txt", $artistList[5] . PHP_EOL, FILE_APPEND);
-file_put_contents("Test_Folder/artists.txt", $artistList[6] . PHP_EOL, FILE_APPEND);
-file_put_contents("Test_Folder/artists.txt", $artistList[7] . PHP_EOL, FILE_APPEND);
-file_put_contents("Test_Folder/artists.txt", $artistList[8] . PHP_EOL, FILE_APPEND);
-file_put_contents("Test_Folder/artists.txt", $artistList[9] . PHP_EOL, FILE_APPEND);
-file_put_contents("Test_Folder/artists.txt", $artistList[10] . PHP_EOL, FILE_APPEND);
-echo "2. 'artists.txt' File Created!<br>";
-echo "3. Content of 'artists.txt':<br>";
-echo $artistList[0] . "<br>";
-echo $artistList[1] . "<br>";
-echo $artistList[2] . "<br>";
-echo $artistList[3] . "<br>";
-echo $artistList[4] . "<br>";
-echo $artistList[5] . "<br>";
-echo $artistList[6] . "<br>";
-echo $artistList[7] . "<br>";
-echo $artistList[8] . "<br>";
-echo $artistList[9] . "<br>";
-echo $artistList[10] . "<br>";
-?>
+    ' Step 4 – Connection string
+
+    Dim conn As New MySqlConnection("server=localhost;userid=root;password=;database=ApplicantsRecord")
+
+
+    ' Step 5 – Load data into DataGridView
+
+    Sub LoadData()
+
+        Dim adapter As New MySqlDataAdapter("SELECT * FROM Applicants", conn)
+
+        Dim table As New DataTable()
+
+        adapter.Fill(table)
+
+        dgvData.DataSource = table
+
+    End Sub
+
+
+    ' Step 6 – Load data on form load
+
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        LoadData()
+
+    End Sub
+
+
+    ' Step 7 – Insert data into MySQL when button is clicked
+
+    Private Sub btnSubmit_Click(sender As Object, e As EventArgs) Handles btnSubmit.Click
+
+        conn.Open()
+
+
+        Dim cmd As New MySqlCommand("INSERT INTO Applicants (name, email, department, phoneNumber) VALUES (@name, @mail, @dept, @phone)", conn)
+
+
+        cmd.Parameters.AddWithValue("@name", txtName.Text)
+
+        cmd.Parameters.AddWithValue("@mail", txtEmail.Text)
+
+        cmd.Parameters.AddWithValue("@dept", txtDepartment.Text)
+
+        cmd.Parameters.AddWithValue("@phone", txtPhone.Text)
+
+
+        cmd.ExecuteNonQuery()
+
+        conn.Close()
+
+
+        LoadData()
+
+        MsgBox("Saved!")
+
+    End Sub
+
+
+End Class
+
+
 
 
 
 sw2
 
-<?php
-session_start();
-
-$User = "yourname";
-$Pass = "BSIT";
-
-if (isset($_GET['logout'])) {
-    session_destroy();
-    setcookie("username", "", time() - 3600);
-    header("Location: student.php");
-    exit();
-}
-
-if (isset($_POST['login'])) {
-    $inputUser = $_POST['username'];
-    $inputPass = $_POST['password'];
-
-    if ($inputUser === $User && $inputPass === $Pass) {
-        $_SESSION['username'] = $inputUser;
-
-        if (isset($_POST['remember'])) {
-            setcookie("username", $inputUser, time() + (2 * 24 * 60 * 60));
-        }
-
-        header("Location: student.php");
-        exit();
-    } else {
-        $error = "Invalid username or password.";
-    }
-}
-
-$isLoggedIn = false;
-if (isset($_SESSION['username']) || isset($_COOKIE['username'])) {
-    $isLoggedIn = true;
-}
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>BSIT Login</title>
-</head>
-<body>
-
-<?php if ($isLoggedIn): ?>
-    <a href="?logout=1">Logout</a>
-    <h3>List of Student Names</h3>
-    <p>1. Lance Gabriel</p>
-    <p>2. Angelica Reyes</p>
-    <p>3. Daniel Cruz</p>
-    <p>4. Katrina Santos</p>
-    <p>5. Miguel Torres</p>
-    <p>6. Patricia Mendoza</p>
-    <p>7. Joshua Dela Cruz</p>
-    <p>8. Nicole Lim</p>
-    <p>9. Andrew Villanueva</p>
-    <p>10. Clarisse Ramos</p>
-
-<?php else: ?>
-    <h2>Login to BSIT</h2>
-    <?php if (isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
-    <form method="POST" action="">
-        <label>Username:</label>
-        <input type="text" name="username" required><br><br>
-        
-        <label>Password:</label>
-        <input type="password" name="password" required><br><br>
-        
-        <input type="checkbox" name="remember"> Remember Me<br><br>
-        
-        <input type="submit" name="login" value="Login">
-    </form>
-<?php endif; ?>
-
-</body>
-</html>
+Imports MySql.Data.MySqlClient
 
 
-lab
+Public Class Form1
 
+    ' Step 4 – Connection string
 
-<?php
-session_start();
-// User roles and permissions
-$users = [
-    'admin' => ['password' => 'admin123', 'role' => 'Admin'],
-    'editor' => ['password' => 'editor123', 'role' => 'Editor'],
-    'viewer' => ['password' => 'viewer123', 'role' => 'Viewer']
-];
-$permissions = [
-    'Admin' => ['upload' => true, 'delete' => true],
-    'Editor' => ['upload' => false, 'delete' => true],
-    'Viewer' => ['upload' => false, 'delete' => false]
-];
-// Handle login
-if (isset($_POST['login'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    if (isset($users[$username]) && $users[$username]['password'] === $password) {
-        $_SESSION['user'] = $username;
-        $_SESSION['role'] = $users[$username]['role'];
-    } else {
-        echo "Invalid credentials!";
-    }
-}
-// Handle file upload
-if (isset($_POST['upload']) && $permissions[$_SESSION['role']]['upload']) {
-    $allowed_extensions = ['html', 'css', 'js', 'php', 'txt']; //.html, .css, .js, .php, .txt
-    $file_extension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-    $file_size = $_FILES['file']['size'];
+    Dim conn As New MySqlConnection("server=localhost;userid=root;password=;database=PastryStore")
+
+    Dim selectedID As Integer = 0
+
    
-    if (in_array($file_extension, $allowed_extensions) && $file_size <=  15728640 ) { //16MB File size
-        $upload_path = 'uploads/' . $_FILES['file']['name'];
-        move_uploaded_file($_FILES['file']['tmp_name'], $upload_path);
-        chmod($upload_path, 0644);
-    } else {
-        echo "Invalid file type or size exceeds 15MB!";
-    }
-}
-// Handle file operations
-if (isset($_POST['file_name'])) {
-    $file_name = $_POST['file_name'];
-    $file_path = "uploads/$file_name";
+
+    ' Step 5 – Load data into DataGridView
+
+    Sub LoadData()
+
+        Dim adapter As New MySqlDataAdapter("SELECT * FROM Donuts", conn)
+
+        Dim table As New DataTable()
+
+        adapter.Fill(table)
+
+        dgvData.DataSource = table
+
+    End Sub
+
    
-    if (isset($_POST['delete']) && $permissions[$_SESSION['role']]['delete']) {
-        if (file_exists($file_path)) {
-            unlink($file_path);
-        }
-    }
-}
-echo <<<EOT
-<!DOCTYPE html>
-<head>
-    <title>File Manager</title>
-</head>
-<body>
-<h2>File Manager</h2>
-EOT;
-if (!isset($_SESSION['user'])) {
-    echo <<<EOT
-    <form method="POST">
-        Username: <input type="text" name="username" required>
-        Password: <input type="password" name="password" required>
-        <button type="submit" name="login">Login</button>
-    </form>
-    EOT;
-} else {
+
+    ' Step 6 – Load data on form load
+
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+        LoadData()
+
+    End Sub
+
    
-    if ($permissions[$_SESSION['role']]['upload']) {
-        echo <<<EOT
-        <form method="POST" enctype="multipart/form-data">
-            <h4>Upload File:</h4>
-            <input type="file" name="file" required>
-            <button type="submit" name="upload">Upload</button>
-        </form>
-        EOT;
-    }
-    $files = array_diff(scandir('uploads'), ['..', '.']);
-    if (!empty($files)) {
-        echo "<h4>Files:</h4><table border='1'><tr><th>File Name</th></tr>";
-        foreach ($files as $file) {
-            echo "<tr><td>$file</td></tr>";
-        }
-        echo "</table>";
-    } else {
-        echo "<p>No files available</p>";
-    }
-    echo <<<EOT
-    <form method="POST">
-    <br>
-        File Name: <input type="text" name="file_name" required>
-    EOT;
-    if ($permissions[$_SESSION['role']]['delete']) {
-        echo '<button type="submit" name="delete">Delete File</button>';
-    }
-    echo <<<EOT
-    </form>
-    <form method="POST">
-          <br>
-        <button name="logout">Logout</button>
-    </form>
-    EOT;
-}
-if (isset($_POST['logout'])) {
-    session_destroy();
-    header("Location: index.php");
-}
-echo "</body></html>";
-?>
+
+    ' Step 7 – Insert data into MySQL when Add button is clicked
+
+    Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click
+
+        conn.Open()
+
+        Dim cmd As New MySqlCommand("INSERT INTO Donuts (donutName, flavor, price, quantity) VALUES (@donutName, @flavor, @price, @quantity)", conn)
+
+        cmd.Parameters.AddWithValue("@donutName", txtDonutName.Text)
+
+        cmd.Parameters.AddWithValue("@flavor", txtFlavor.Text)
+
+        cmd.Parameters.AddWithValue("@price", txtPrice.Text)
+
+        cmd.Parameters.AddWithValue("@quantity", txtQuantity.Text)
+
+        cmd.ExecuteNonQuery()
+
+        conn.Close()
+
+        LoadData()
+
+        MsgBox("Donut Added!")
+
+    End Sub
+
+   
+
+    ' Step 8 – Update data when Update button is clicked
+
+    Private Sub btnUpdate_Click(sender As Object, e As EventArgs) Handles btnUpdate.Click
+
+        If selectedID = 0 Then
+
+            MsgBox("Please select a row to update!")
+
+        Else
+
+            conn.Open()
+
+            Dim cmd As New MySqlCommand("UPDATE Donuts SET donutName=@donutName, flavor=@flavor, price=@price, quantity=@quantity WHERE donutID=@id", conn)
+
+            cmd.Parameters.AddWithValue("@donutName", txtDonutName.Text)
+
+            cmd.Parameters.AddWithValue("@flavor", txtFlavor.Text)
+
+            cmd.Parameters.AddWithValue("@price", txtPrice.Text)
+
+            cmd.Parameters.AddWithValue("@quantity", txtQuantity.Text)
+
+            cmd.Parameters.AddWithValue("@id", selectedID)
+
+            cmd.ExecuteNonQuery()
+
+            conn.Close()
+
+            LoadData()
+
+            MsgBox("Donut Updated!")
+
+        End If
+
+    End Sub
+
+   
+
+    ' Step 9 – DataGridView click event to populate textboxes
+
+    Private Sub dgvData_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvData.CellClick
+
+        If e.RowIndex >= 0 Then
+
+            Dim row As DataGridViewRow = dgvData.Rows(e.RowIndex)
+
+            selectedID = Convert.ToInt32(row.Cells("donutID").Value)
+
+            txtDonutName.Text = row.Cells("donutName").Value.ToString()
+
+            txtFlavor.Text = row.Cells("flavor").Value.ToString()
+
+            txtPrice.Text = row.Cells("price").Value.ToString()
+
+            txtQuantity.Text = row.Cells("quantity").Value.ToString()
+
+        End If
+
+    End Sub
+
+End Class
+
+
+
+lab 
+
+Imports MySql.Data.MySqlClient
+
+
+Public Class Form1
+
+
+    Dim conn As New MySqlConnection("server=localhost;userid=root;password=;database=StudentsDB")
+
+
+    Private Sub btnLoad_Click(sender As Object, e As EventArgs) Handles btnLoad.Click
+
+        Dim adapter As New MySqlDataAdapter("SELECT * FROM students", conn)
+
+        Dim table As New DataTable()
+
+        adapter.Fill(table)
+
+        dgvData.DataSource = table
+
+    End Sub
+
+
+    Private Sub btnInsert_Click(sender As Object, e As EventArgs) Handles btnInsert.Click
+
+        conn.Open()
+
+
+        Dim cmd As New MySqlCommand("INSERT INTO students (firstName, lastName, course, department) VALUES (@fname, @lname, @course, @dept)", conn)
+
+
+        cmd.Parameters.AddWithValue("@fname", txtFirstName.Text)
+
+        cmd.Parameters.AddWithValue("@lname", txtLastName.Text)
+
+        cmd.Parameters.AddWithValue("@course", txtCourse.Text)
+
+        cmd.Parameters.AddWithValue("@dept", txtDepartment.Text)
+
+
+        cmd.ExecuteNonQuery()
+
+        conn.Close()
+
+
+        btnLoad.PerformClick()
+
+        MsgBox("Student record inserted!")
+
+    End Sub
+
+
+    Private Sub btnUpdate_Click(sender As Object, e As EventArgs) Handles btnUpdate.Click
+
+        conn.Open()
+
+
+        Dim cmd As New MySqlCommand("UPDATE students SET firstName = @fname, lastName = @lname, course = @course, department = @dept WHERE studentID = @id", conn)
+
+
+        cmd.Parameters.AddWithValue("@fname", txtFirstName.Text)
+
+        cmd.Parameters.AddWithValue("@lname", txtLastName.Text)
+
+        cmd.Parameters.AddWithValue("@course", txtCourse.Text)
+
+        cmd.Parameters.AddWithValue("@dept", txtDepartment.Text)
+
+        cmd.Parameters.AddWithValue("@id", txtStudentID.Text)
+
+
+        cmd.ExecuteNonQuery()
+
+        conn.Close()
+
+
+        btnLoad.PerformClick()
+
+        MsgBox("Student record updated!")
+
+    End Sub
+
+End Class
+
