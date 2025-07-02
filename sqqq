@@ -135,153 +135,112 @@ if (isset($_SESSION['username']) || isset($_COOKIE['username'])) {
 
 lab
 
-logout.php
 
 <?php
 session_start();
-session_destroy();
-header("Location: index.php");
-exit();
-
-index.php
-
-<?php
-session_start();
-
+// User roles and permissions
 $users = [
     'admin' => ['password' => 'admin123', 'role' => 'Admin'],
     'editor' => ['password' => 'editor123', 'role' => 'Editor'],
     'viewer' => ['password' => 'viewer123', 'role' => 'Viewer']
 ];
-
-$uploadDir = 'uploads/';
-if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0754, true);
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
+$permissions = [
+    'Admin' => ['upload' => true, 'delete' => true],
+    'Editor' => ['upload' => false, 'delete' => true],
+    'Viewer' => ['upload' => false, 'delete' => false]
+];
+// Handle login
+if (isset($_POST['login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
-
     if (isset($users[$username]) && $users[$username]['password'] === $password) {
-        $_SESSION['username'] = $username;
+        $_SESSION['user'] = $username;
         $_SESSION['role'] = $users[$username]['role'];
     } else {
-        $error = "Invalid username or password.";
+        echo "Invalid credentials!";
     }
 }
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload']) && isset($_SESSION['role']) && $_SESSION['role'] === 'Admin') {
-    if (isset($_FILES['file_upload']) && $_FILES['file_upload']['error'] === UPLOAD_ERR_OK) {
-        $allowedMime = [
-            'application/pdf' => 'pdf',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
-            'video/mp4' => 'mp4',
-            'audio/mpeg' => 'mp3'
-        ];
-
-        $fileTmp = $_FILES['file_upload']['tmp_name'];
-        $fileName = basename($_FILES['file_upload']['name']);
-        $fileSize = $_FILES['file_upload']['size'];
-        $fileMime = mime_content_type($fileTmp);
-        $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-
-        if (array_key_exists($fileMime, $allowedMime) && $allowedMime[$fileMime] === $fileExt) {
-            if ($fileSize <= 100 * 1024 * 1024) {
-                if (move_uploaded_file($fileTmp, $uploadDir . $fileName)) {
-                    $message = "File uploaded successfully.";
-                } else {
-                    $message = "Failed to move file.";
-                }
-            } else {
-                $message = "File exceeds 100MB size limit.";
-            }
-        } else {
-            $message = "Invalid file type.";
-        }
+// Handle file upload
+if (isset($_POST['upload']) && $permissions[$_SESSION['role']]['upload']) {
+    $allowed_extensions = ['html', 'css', 'js', 'php', 'txt']; //.html, .css, .js, .php, .txt
+    $file_extension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+    $file_size = $_FILES['file']['size'];
+   
+    if (in_array($file_extension, $allowed_extensions) && $file_size <=  15728640 ) { //16MB File size
+        $upload_path = 'uploads/' . $_FILES['file']['name'];
+        move_uploaded_file($_FILES['file']['tmp_name'], $upload_path);
+        chmod($upload_path, 0644);
     } else {
-        $message = "No file uploaded or upload error.";
+        echo "Invalid file type or size exceeds 15MB!";
     }
 }
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete']) && isset($_SESSION['role']) && in_array($_SESSION['role'], ['Admin', 'Editor'])) {
-    $fileToDelete = $_POST['file_to_delete'];
-    $filePath = $uploadDir . $fileToDelete;
-
-    if (file_exists($filePath)) {
-        if (unlink($filePath)) {
-            $message = "File deleted successfully.";
-        } else {
-            $message = "Failed to delete file.";
-        }
-    } else {
-        $message = "File does not exist.";
-    }
-}
-
-$files = [];
-if (is_dir($uploadDir)) {
-    $allFiles = scandir($uploadDir);
-    foreach ($allFiles as $file) {
-        if ($file !== '.' && $file !== '..') {
-            $files[] = $file;
+// Handle file operations
+if (isset($_POST['file_name'])) {
+    $file_name = $_POST['file_name'];
+    $file_path = "uploads/$file_name";
+   
+    if (isset($_POST['delete']) && $permissions[$_SESSION['role']]['delete']) {
+        if (file_exists($file_path)) {
+            unlink($file_path);
         }
     }
 }
-?>
-
+echo <<<EOT
 <!DOCTYPE html>
-<html>
 <head>
-    <title>Multimedia Archive</title>
+    <title>File Manager</title>
 </head>
 <body>
-
-    <h1>Multimedia Archive</h1>
-
-    <?php if (!isset($_SESSION['username'])): ?>
-        <h2>Login</h2>
-        <form method="POST">
-            <label>Username: <input type="text" name="username" required></label><br>
-            <label>Password: <input type="password" name="password" required></label><br>
-            <button type="submit" name="login">Login</button>
+<h2>File Manager</h2>
+EOT;
+if (!isset($_SESSION['user'])) {
+    echo <<<EOT
+    <form method="POST">
+        Username: <input type="text" name="username" required>
+        Password: <input type="password" name="password" required>
+        <button type="submit" name="login">Login</button>
+    </form>
+    EOT;
+} else {
+   
+    if ($permissions[$_SESSION['role']]['upload']) {
+        echo <<<EOT
+        <form method="POST" enctype="multipart/form-data">
+            <h4>Upload File:</h4>
+            <input type="file" name="file" required>
+            <button type="submit" name="upload">Upload</button>
         </form>
-        <?php if (isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
-    <?php else: ?>
-        <h2>Welcome, <?php echo $_SESSION['username']; ?> (<?php echo $_SESSION['role']; ?>)</h2>
-
-        <?php if ($_SESSION['role'] === 'Admin'): ?>
-            <h3>Upload File</h3>
-            <form method="POST" enctype="multipart/form-data">
-                <input type="file" name="file_upload" required>
-                <button type="submit" name="upload">Upload</button>
-            </form>
-        <?php endif; ?>
-
-        <h3>Uploaded Files</h3>
-        <table border="1">
-            <tr>
-                <th>File Name</th>
-                <th>Action</th>
-            </tr>
-            <?php foreach ($files as $file): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($file); ?></td>
-                    <td>
-                        <?php if ($_SESSION['role'] === 'Admin' || $_SESSION['role'] === 'Editor'): ?>
-                            <form method="POST" style="display:inline;">
-                                <input type="hidden" name="file_to_delete" value="<?php echo htmlspecialchars($file); ?>">
-                                <button type="submit" name="delete">Delete</button>
-                            </form>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
-
-        <p><?php if (isset($message)) echo $message; ?></p>
-        <a href="logout.php">Logout</a>
-    <?php endif; ?>
-
-</body>
-</html>
+        EOT;
+    }
+    $files = array_diff(scandir('uploads'), ['..', '.']);
+    if (!empty($files)) {
+        echo "<h4>Files:</h4><table border='1'><tr><th>File Name</th></tr>";
+        foreach ($files as $file) {
+            echo "<tr><td>$file</td></tr>";
+        }
+        echo "</table>";
+    } else {
+        echo "<p>No files available</p>";
+    }
+    echo <<<EOT
+    <form method="POST">
+    <br>
+        File Name: <input type="text" name="file_name" required>
+    EOT;
+    if ($permissions[$_SESSION['role']]['delete']) {
+        echo '<button type="submit" name="delete">Delete File</button>';
+    }
+    echo <<<EOT
+    </form>
+    <form method="POST">
+          <br>
+        <button name="logout">Logout</button>
+    </form>
+    EOT;
+}
+if (isset($_POST['logout'])) {
+    session_destroy();
+    header("Location: index.php");
+}
+echo "</body></html>";
+?>
