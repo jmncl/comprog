@@ -1,72 +1,29 @@
 sw1
 Imports MySql.Data.MySqlClient
-
-
 Public Class Form1
-
-
-    ' Step 4 – Connection string
-
     Dim conn As New MySqlConnection("server=localhost;userid=root;password=;database=ApplicantsRecord")
-
-
-    ' Step 5 – Load data into DataGridView
-
-    Sub LoadData()
-
-        Dim adapter As New MySqlDataAdapter("SELECT * FROM Applicants", conn)
-
+    Sub loadData()
+        Dim adapter As New MySqlDataAdapter("Select * from Applicants", conn)
         Dim table As New DataTable()
-
         adapter.Fill(table)
-
-        dgvData.DataSource = table
-
+        DataGridView1.DataSource = table
     End Sub
-
-
-    ' Step 6 – Load data on form load
-
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-        LoadData()
-
+        loadData()
     End Sub
-
-
-    ' Step 7 – Insert data into MySQL when button is clicked
-
-    Private Sub btnSubmit_Click(sender As Object, e As EventArgs) Handles btnSubmit.Click
-
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
         conn.Open()
-
-
-        Dim cmd As New MySqlCommand("INSERT INTO Applicants (name, email, department, phoneNumber) VALUES (@name, @mail, @dept, @phone)", conn)
-
-
-        cmd.Parameters.AddWithValue("@name", txtName.Text)
-
-        cmd.Parameters.AddWithValue("@mail", txtEmail.Text)
-
-        cmd.Parameters.AddWithValue("@dept", txtDepartment.Text)
-
-        cmd.Parameters.AddWithValue("@phone", txtPhone.Text)
-
-
+        Dim cmd As New MySqlCommand("Insert into Applicants(name, email, department, phoneNumber) values (@name,@email,@dept,@phone)", conn)
+        cmd.Parameters.AddWithValue("@name", TextBox1.Text)
+        cmd.Parameters.AddWithValue("@email", TextBox2.Text)
+        cmd.Parameters.AddWithValue("@dept", TextBox3.Text)
+        cmd.Parameters.AddWithValue("@phone", TextBox4.Text)
         cmd.ExecuteNonQuery()
-
         conn.Close()
-
-
-        LoadData()
-
+        loadData()
         MsgBox("Saved!")
-
     End Sub
-
-
 End Class
-
 
 
 
@@ -74,134 +31,59 @@ End Class
 sw2
 
 Imports MySql.Data.MySqlClient
-
-
 Public Class Form1
-
-    ' Step 4 – Connection string
-
     Dim conn As New MySqlConnection("server=localhost;userid=root;password=;database=PastryStore")
-
     Dim selectedID As Integer = 0
-
-   
-
-    ' Step 5 – Load data into DataGridView
-
-    Sub LoadData()
-
-        Dim adapter As New MySqlDataAdapter("SELECT * FROM Donuts", conn)
-
+    Sub loadData()
+        Dim adapter As New MySqlDataAdapter("Select * from Donuts ", conn)
         Dim table As New DataTable()
-
         adapter.Fill(table)
-
-        dgvData.DataSource = table
-
+        DataGridView1.DataSource = table
     End Sub
-
-   
-
-    ' Step 6 – Load data on form load
-
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-        LoadData()
-
+        loadData()
     End Sub
-
-   
-
-    ' Step 7 – Insert data into MySQL when Add button is clicked
-
-    Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click
-
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
         conn.Open()
-
-        Dim cmd As New MySqlCommand("INSERT INTO Donuts (donutName, flavor, price, quantity) VALUES (@donutName, @flavor, @price, @quantity)", conn)
-
-        cmd.Parameters.AddWithValue("@donutName", txtDonutName.Text)
-
-        cmd.Parameters.AddWithValue("@flavor", txtFlavor.Text)
-
-        cmd.Parameters.AddWithValue("@price", txtPrice.Text)
-
-        cmd.Parameters.AddWithValue("@quantity", txtQuantity.Text)
-
+        Dim cmd As New MySqlCommand("Insert into Donuts(donutName, flavor, price, quantity) values (@donutName,@flavor,@price,@quantity)", conn)
+        cmd.Parameters.AddWithValue("@donutName", TextBox1.Text)
+        cmd.Parameters.AddWithValue("@flavor", TextBox2.Text)
+        cmd.Parameters.AddWithValue("@price", TextBox3.Text)
+        cmd.Parameters.AddWithValue("@quantity", TextBox4.Text)
         cmd.ExecuteNonQuery()
-
         conn.Close()
-
-        LoadData()
-
+        loadData()
         MsgBox("Donut Added!")
-
     End Sub
 
-   
-
-    ' Step 8 – Update data when Update button is clicked
-
-    Private Sub btnUpdate_Click(sender As Object, e As EventArgs) Handles btnUpdate.Click
-
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
         If selectedID = 0 Then
-
             MsgBox("Please select a row to update!")
-
         Else
-
             conn.Open()
-
             Dim cmd As New MySqlCommand("UPDATE Donuts SET donutName=@donutName, flavor=@flavor, price=@price, quantity=@quantity WHERE donutID=@id", conn)
-
-            cmd.Parameters.AddWithValue("@donutName", txtDonutName.Text)
-
-            cmd.Parameters.AddWithValue("@flavor", txtFlavor.Text)
-
-            cmd.Parameters.AddWithValue("@price", txtPrice.Text)
-
-            cmd.Parameters.AddWithValue("@quantity", txtQuantity.Text)
-
-            cmd.Parameters.AddWithValue("@id", selectedID)
-
+            cmd.Parameters.AddWithValue("@donutName", TextBox1.Text)
+            cmd.Parameters.AddWithValue("@flavor", TextBox2.Text)
+            cmd.Parameters.AddWithValue("@price", TextBox3.Text)
+            cmd.Parameters.AddWithValue("@quantity", TextBox4.Text)
             cmd.ExecuteNonQuery()
-
             conn.Close()
-
-            LoadData()
-
+            loadData()
             MsgBox("Donut Updated!")
-
         End If
-
     End Sub
 
-   
-
-    ' Step 9 – DataGridView click event to populate textboxes
-
-    Private Sub dgvData_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvData.CellClick
-
+    Private Sub DataGridView1_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView1.CellContentClick
         If e.RowIndex >= 0 Then
-
-            Dim row As DataGridViewRow = dgvData.Rows(e.RowIndex)
-
+            Dim row As DataGridViewRow = DataGridView1.Rows(e.RowIndex)
             selectedID = Convert.ToInt32(row.Cells("donutID").Value)
-
-            txtDonutName.Text = row.Cells("donutName").Value.ToString()
-
-            txtFlavor.Text = row.Cells("flavor").Value.ToString()
-
-            txtPrice.Text = row.Cells("price").Value.ToString()
-
-            txtQuantity.Text = row.Cells("quantity").Value.ToString()
-
+            TextBox1.Text = row.Cells("donutName").Value.ToString()
+            TextBox2.Text = row.Cells("flavor").Value.ToString()
+            TextBox3.Text = row.Cells("price").Value.ToString()
+            TextBox4.Text = row.Cells("quantity").Value.ToString()
         End If
-
     End Sub
-
 End Class
-
 
 
 lab 
