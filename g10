@@ -8,7 +8,7 @@ Imports System.Xml
 
 
 
-Public Class Form1
+Public Class Form
 
     Dim connectionString As String = "Server=NATHANIELL\SQLEXPRESS;Database=G10SW1;Trusted_Connection=True;"
 
